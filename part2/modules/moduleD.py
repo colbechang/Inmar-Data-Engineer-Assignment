@@ -2,7 +2,7 @@ import pandas as pd
 from pathlib import Path
 
 
-REFERENCE_PATH = Path(__file__).resolve().parent.parent / "reference" / "Areas_in_blore.xlsx"
+REFERENCE_PATH = Path(__file__).resolve().parent.parent / "references" / "Areas_in_blore.xlsx"
 
 def run_location_validation(df):
     """Validates the location field against the reference file. Returns clean DataFrame, bad DataFrame, and metadata entries."""
