@@ -71,7 +71,8 @@ def run_pipeline():
           write_metadata(all_metadata, file_name, str(METADATA_DIR))
           move_to_processed(str(file_path), str(PROCESSED_DIR))
 
-          print(f"Finished {file_name}. {len(clean_df)} clean, {len(bad_df_a)} bad.")
+          total_bad = sum(len(df) for df in all_bad_dfs)
+          print(f"Finished {file_name}. {len(clean_df)} clean, {total_bad} bad.")
 
         except Exception as e:
           print(f"Error processing {file_name}: {e}")
