@@ -1,6 +1,8 @@
 from pathlib import Path
 from modules.moduleB import file_check
 from modules.moduleA import run_data_quality_check
+from modules.moduleC import run_custom_checks
+from modules.moduleD import run_location_validation
 from utils.file_io import write_out_file, write_bad_file, write_metadata, move_to_processed, ensure_directories
 import pandas as pd
 
@@ -19,6 +21,7 @@ def run_pipeline():
     - Reads in files from the input directory
     - Uses Module B to check if the file has already been processed
     - Uses Module A to run data quality checks on the file
+    - Uses Module C to dedupe and check for rate votes inconsistency on the file
     - Writes the clean records to the output directory
     - Writes the bad records to the bad directory
     - Writes the metadata to the metadata directory
@@ -51,6 +54,17 @@ def run_pipeline():
           all_bad_dfs.append(bad_df_a)
           all_metadata.extend(metadata_a)
           print(f"Module A: {len(bad_df_a)} bad records, {len(clean_df)} clean records.")
+
+          clean_df, bad_df_c, metadata_c = run_custom_checks(clean_df)
+          all_bad_dfs.append(bad_df_c)
+          all_metadata.extend(metadata_c)
+          print(f"Module C: {len(bad_df_c)} bad records, {len(clean_df)} clean records.")
+
+          clean_df, bad_df_d, metadata_d = run_location_validation(clean_df)
+          all_bad_dfs.append(bad_df_d)
+          all_metadata.extend(metadata_d)
+          print(f"Module D: {len(bad_df_d)} bad records, {len(clean_df)} clean records.")
+
 
           write_out_file(clean_df, file_name, str(OUTPUT_DIR))
           write_bad_file(all_bad_dfs, file_name, str(BAD_DIR))
