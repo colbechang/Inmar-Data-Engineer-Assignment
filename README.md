@@ -18,6 +18,9 @@ The pipeline processes daily Zomato restaurant data files through a series of va
 
 The modules are structured so that each one receives a DataFrame, runs its checks, and returns clean records, bad records, and metadata. No module reads or writes files directly, all I/O is handled by `main.py` and the utility functions in `utils/file_io.py`. This keeps the modules focused on logic and makes them easy to test or reorder.
 
+**NOTE**
+In the metadata file, the row numbers are 0-indexed. To get the equivalent row in the csv file, add 2 to the row number (+1 for header and +1 for 1-indexed). Had issues opening in excel where the row numbers would be completely different (row 234 in pandas would be row 245 in excel).
+
 ### Module B - File Check
 
 Runs first before any data is loaded. It checks three things:
@@ -34,12 +37,18 @@ Handles the core data cleaning and validation:
 - **Phone validation**: The phone field is split into `phone_1` and `phone_2` since the raw data often contains multiple numbers separated by newlines. Each number is cleaned by stripping `+`, spaces, and dashes, then validated for 10, 11, or 12 digits (covering Indian mobile, landline, and country code formats). If one number is valid and the other isn't, the record is kept with the bad number discarded. Only if both are invalid is the record rejected.
 - **Descriptive field cleaning**: Fields like `address`, `name`, `rest_type`, `dish_liked`, and `cuisines` are cleaned by removing encoding artifacts and special characters. `reviews_list` is handled separately since it's stored as a string representation of a list,  it gets parsed, each review is cleaned individually, and the list is reconstructed.
 
+For part 3a, I assumed this was specifically about the phone numbers since some records had 2 phone numbers. I implemented this in the phone validation section.
+
 ### Module C - Custom Data Quality Checks
 
 Two additional checks not covered by Module A:
 - **Duplicate detection**: Flags and removes duplicate rows based on `name`, `address`, and `phone` together. Using all three fields avoids false positives where different restaurants share the same name or address. The first occurrence is kept, the rest are flagged.
 - **Rate/votes consistency**: If a restaurant has a `rate` value present, `votes` should be greater than 0. A rating with zero votes is logically inconsistent. Rows where `votes` can't be parsed as a number are skipped since that's a data type issue, not a consistency issue.
 
+Took the name, address, and phone as the dedupe columns since they were the only required columns (non-null).
+
 ### Module D - Location Validation
 
-Validates the `location` field against the `areas_in_blore.csv` reference file. Each record's location is compared to the list of known areas in Bangalore. Records with locations not found in the reference file are flagged as bad. The comparison is case-insensitive to account for inconsistencies in casing between the data and the reference file.
+Validates the `location` field against the `areas_in_blore.xlsx` reference file. Each record's location is compared to the list of known areas in Bangalore. Records with locations not found in the reference file are flagged as bad. The comparison is case-insensitive to account for inconsistencies in casing between the data and the reference file.
+
+Assumed location was equivalent to area between the 2 files.
