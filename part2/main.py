@@ -4,11 +4,13 @@ from modules.moduleA import run_data_quality_check
 from utils.file_io import write_out_file, write_bad_file, write_metadata, move_to_processed, ensure_directories
 import pandas as pd
 
-INPUT_DIR = Path("data/input")
-OUTPUT_DIR = Path("data/output")
-BAD_DIR = Path("data/bad")
-METADATA_DIR = Path("data/metadata")
-PROCESSED_DIR = Path("data/processed")
+SCRIPT_DIR = Path(__file__).resolve().parent
+
+INPUT_DIR = SCRIPT_DIR / "data" / "input"
+OUTPUT_DIR = SCRIPT_DIR / "data" / "output"
+BAD_DIR = SCRIPT_DIR / "data" / "bad"
+METADATA_DIR = SCRIPT_DIR / "data" / "metadata"
+PROCESSED_DIR = SCRIPT_DIR / "data" / "processed"
 
 
 def run_pipeline():

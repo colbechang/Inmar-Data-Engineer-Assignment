@@ -22,7 +22,7 @@ def validate_phone(phone):
         return False
     phone = str(phone)
     digits = re.sub(r"[^0-9]", "", phone)
-    return len(digits) in [10, 12]
+    return len(digits) in [10, 11, 12]
 
 
 def split_phone_field(phone):
@@ -84,7 +84,7 @@ def run_data_quality_check(df):
 
         null_fields = check_nulls(row)
         if null_fields:
-            issues.append(f"null_{','.join(null_fields)}")
+            issues.append("null")
 
         phone_1, phone_2 = split_phone_field(row.get("phone"))
 
