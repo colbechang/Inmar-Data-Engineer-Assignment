@@ -14,6 +14,8 @@ def check_rate_votes(df):
     for index, row in df.iterrows():
         rate = row.get("rate")
         votes = row.get("votes")
+        if rate == "NEW":
+            continue
         if pd.notna(rate) and str(rate).strip() != "":
             try:
                 votes_val = int(votes)
